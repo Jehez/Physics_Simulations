@@ -16,9 +16,17 @@ G = 6.67e-11
 
 # for each frame, the planet is moved by some distance
 # this motion represents a motion for a certain duration of time
-# this time simulated for each frame is the TIMESTEP in seconds (SI Unit)
+# For each small step in the simulation, calculations are done taking into account the TIMESTEP
+# For each calculation done for calculating acceleration, velocity and displacement, the time passed is assumed to be equal to the TIMESTEP
+# However, this can cause inaccurate results at high values of TIMESTEP
+# Simulations can vary by large margins if the TIMESTEP is increased with identical initial conditions
+# As gravity is a weak force, time needs to be sped up by a large margin to get useful simulations
+# To achieve this, each multiple simulations will be done per frame
+
+# set default starting values for simulation
+simulations_per_frame = 1
 TIMESTEP = 1
-FPS = 60 # set fps
+FPS = 60
 
 #function to add title to window
 def add_title(title):   set_caption(title)
@@ -98,7 +106,8 @@ def start_sim():
             if event.type == QUIT:  return
         
         # calculate net acceleration of all planets and update screen
-        for p in all_planets:
-            p.update_pos(all_planets)
-            p.draw(window)
+        for _ in range(simulations_per_frame):
+            for p in all_planets:
+                p.update_pos(all_planets)
+        for p in all_planets:    p.draw(window)
         update_display()
